@@ -18,10 +18,12 @@ async function highlight(confidence) {
     pred_divs[i].classList.remove('green_background');
   }
   if((confidence >0.9999)){
+    document.getElementById('ok_atlas').innerHTML = 'ok_atlas ' + confidence.toFixed(5);
    document.getElementById('ok_atlas').classList.add('green_background');
-   document.getElementById('yes').play();
+   // document.getElementById('yes').play();
   }
   else {
+    document.getElementById('other').innerHTML = 'other ' + confidence.toFixed(5);
     document.getElementById('other').classList.add('green_background');
   }
 }
@@ -64,7 +66,7 @@ async function listen(){
    // console.log(label+","+words[label]+","+conf);
    const confidence = await probs.data()
    console.log("confidence:", confidence[0].toFixed(4))
-   await highlight(confidence);
+   await highlight(confidence[0]);
    tf.dispose([input, probs]);
   }, {
    overlapFactor: 0.25,
