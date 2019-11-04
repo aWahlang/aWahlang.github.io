@@ -17,7 +17,7 @@ async function highlight(confidence) {
   for(let i=0;i<pred_divs.length;i++){
     pred_divs[i].classList.remove('green_background');
   }
-  if((confidence >0.9)){
+  if((confidence >0.9999)){
    document.getElementById('ok_atlas').classList.add('green_background');
    document.getElementById('yes').play();
   }
