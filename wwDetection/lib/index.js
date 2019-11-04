@@ -4,7 +4,7 @@ let model;
 async function app() {
  baseRecognizer = speechCommands.create('BROWSER_FFT');
  await baseRecognizer.ensureModelLoaded();
- model = await tf.loadLayersModel('http://127.0.0.1:8080/models/new_tfjs_model/model.json');
+ model = await tf.loadLayersModel('https://awahlang.github.io/wwDetection/models/new_tfjs_model/model.json');
 }
 
 app().then((result)=>{
