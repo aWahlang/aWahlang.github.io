@@ -1424,6 +1424,7 @@
                                 return [2];
                             }
 							// this.metadataOrURL = "http://127.0.0.1:8080/metadata.json" ;
+                            console.log(this.metadataURL)
                             if (!(typeof this.metadataOrURL === 'string')) return [3, 2];
                             return [4, loadMetadataJson(this.metadataOrURL)];
                         case 1:
