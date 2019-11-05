@@ -1,5 +1,6 @@
 let recognizer,baseRecognizer;
 let model;
+let threshold = 0.9999;
 
 async function app() {
  baseRecognizer = speechCommands.create('BROWSER_FFT');
@@ -17,7 +18,7 @@ async function highlight(confidence) {
   for(let i=0;i<pred_divs.length;i++){
     pred_divs[i].classList.remove('green_background');
   }
-  if((confidence >0.9999)){
+  if((confidence >threshold)){
     document.getElementById('ok_atlas').innerHTML = 'ok_atlas ' + confidence.toFixed(5);
     document.getElementById('ok_atlas').classList.add('green_background');
    // document.getElementById('yes').play();
@@ -26,6 +27,12 @@ async function highlight(confidence) {
     document.getElementById('other').innerHTML = 'other ' + confidence.toFixed(5);
     document.getElementById('other').classList.add('green_background');
   }
+}
+
+function setThreshold(){
+  let value = document.getElementById("threshold").value;
+  console.log("update threshold: ",value);
+  threshold = value;
 }
 
 const NUM_FRAMES = 43;
