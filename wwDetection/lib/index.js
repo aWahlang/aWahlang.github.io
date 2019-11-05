@@ -19,7 +19,7 @@ async function highlight(confidence) {
   }
   if((confidence >0.9999)){
     document.getElementById('ok_atlas').innerHTML = 'ok_atlas ' + confidence.toFixed(5);
-   document.getElementById('ok_atlas').classList.add('green_background');
+    document.getElementById('ok_atlas').classList.add('green_background');
    // document.getElementById('yes').play();
   }
   else {
