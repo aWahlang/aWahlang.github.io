@@ -5,7 +5,7 @@ let threshold = 0.99999;
 async function app() {
  baseRecognizer = speechCommands.create('BROWSER_FFT');
  await baseRecognizer.ensureModelLoaded();
- model = await tf.loadLayersModel('https://awahlang.github.io/wwDetection/models/new_tfjs_model/model.json');
+ model = await tf.loadLayersModel('https://awahlang.github.io/wwDetection/models/atlas_model_v4/model.json');
 }
 
 app().then((result)=>{
