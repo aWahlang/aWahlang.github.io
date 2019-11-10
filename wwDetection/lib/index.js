@@ -6,6 +6,7 @@ async function app() {
  baseRecognizer = speechCommands.create('BROWSER_FFT');
  await baseRecognizer.ensureModelLoaded();
  model = await tf.loadLayersModel('https://awahlang.github.io/wwDetection/models/atlas_model_v4/model.json');
+ console.log("model used: atlas_model_v4")
 }
 
 app().then((result)=>{
