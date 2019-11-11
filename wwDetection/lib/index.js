@@ -20,13 +20,13 @@ async function highlight(confidence) {
     pred_divs[i].classList.remove('green_background');
   }
   if((confidence >= threshold)){
-    document.getElementById('ok_atlas').innerHTML = 'ok_Atlas ' + confidence.toFixed(5);
+    document.getElementById('ok_atlas').innerHTML = 'ok_Atlas<br>' + confidence.toFixed(5);
     document.getElementById('ok_atlas').classList.add('green_background');
    // document.getElementById('yes').play();
   }
   else {
     let val = 1 - confidence.toFixed(5);
-    document.getElementById('other').innerHTML = 'other ' + val;
+    document.getElementById('other').innerHTML = 'other<br>' + val;
     document.getElementById('other').classList.add('green_background');
   }
 }
