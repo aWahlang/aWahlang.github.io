@@ -25,7 +25,7 @@ async function highlight(confidence) {
    // document.getElementById('yes').play();
   }
   else {
-    let val = 1 - confidence.toFixed(5);
+    let val = 1.000 - confidence.toFixed(5);
     document.getElementById('other').innerHTML = 'other<br>' + val;
     document.getElementById('other').classList.add('green_background');
   }
