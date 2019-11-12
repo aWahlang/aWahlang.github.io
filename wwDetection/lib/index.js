@@ -5,8 +5,9 @@ let threshold = 0.99999;
 async function app() {
  baseRecognizer = speechCommands.create('BROWSER_FFT');
  await baseRecognizer.ensureModelLoaded();
- model = await tf.loadLayersModel('https://awahlang.github.io/wwDetection/models/atlas_model_v4/model.json');
- console.log("model used: atlas_model_v4");
+ let modelName = 'atlas_model_v4';
+ model = await tf.loadLayersModel('https://awahlang.github.io/wwDetection/models/'+modelName+'/model.json');
+ console.log("model used:", modelName);
 }
 
 app().then((result)=>{
@@ -78,9 +79,9 @@ async function listen(){
    await highlight(confidence[0]);
    tf.dispose([input, probs]);
   }, {
-   overlapFactor: 0.25,
+   overlapFactor: 0.50,
    includeSpectrogram: true,
-   invokeCallbackOnNoiseAndUnknown: true
+   invokeCallbackOnNoiseAndUnknown: false
   });
 }
 
