@@ -1,6 +1,6 @@
 let recognizer,baseRecognizer;
 let model;
-let threshold = 0.99999;
+let threshold = 0.99;
 
 async function app() {
  baseRecognizer = speechCommands.create('BROWSER_FFT');
