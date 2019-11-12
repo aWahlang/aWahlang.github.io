@@ -79,7 +79,7 @@ async function listen(){
    await highlight(confidence[0]);
    tf.dispose([input, probs]);
   }, {
-   overlapFactor: 0.50,
+   overlapFactor: 0.75,
    includeSpectrogram: true,
    invokeCallbackOnNoiseAndUnknown: false
   });
