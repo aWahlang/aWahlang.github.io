@@ -23,6 +23,7 @@ async function highlight(confidence) {
   if((confidence >= threshold)){
     document.getElementById('ok_atlas').innerHTML = 'ok_Atlas<br>' + confidence.toFixed(5);
     document.getElementById('ok_atlas').classList.add('green_background');
+    console.log("**OKAY ATLAS DETECTED**");
    // document.getElementById('yes').play();
   }
   else {
