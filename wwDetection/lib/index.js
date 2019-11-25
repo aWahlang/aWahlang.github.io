@@ -30,7 +30,7 @@ async function highlight(confidence) {
   else {
     let val = 1.000 - confidence.toFixed(5);
     document.getElementById('other').innerHTML = 'other<br>' + val;
-    document.getElementById('other').classList.add('green_background');
+    document.getElementById('other').classList.add('red_background');
   }
 }
 
