@@ -5,7 +5,7 @@ let threshold = 0.99;
 async function app() {
  baseRecognizer = speechCommands.create('BROWSER_FFT');
  await baseRecognizer.ensureModelLoaded();
- let modelName = 'atlas_model_v6_4';
+ let modelName = 'atlas_model_v5_5';
  model = await tf.loadLayersModel('https://awahlang.github.io/wwDetection/models/'+modelName+'/model.json');
  console.log("model used:", modelName);
  document.getElementById('model_version').innerHTML = "Model used: " + modelName;
