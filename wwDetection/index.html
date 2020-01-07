@@ -7,19 +7,12 @@
     <script src="https://awahlang.github.io/wwDetection/lib/spec_gen_lib.js"></script>
     <!-- <script src="./lib/speechcommands.js"></script> -->
     <script src="https://awahlang.github.io/wwDetection/lib/index2.js"></script>
+    <script src=".https://awahlang.github.io/wwDetection/lib/canvasjs.min.js"></script>
     <link rel="stylesheet" href="./lib/styles.css">
     <title>Offline Recognition</title>
   </head> 
   <body>
     <button id="listen" onclick="listen()" class="button" disabled="true">Listen for "OK ATLAS"</button>
-    <div id="console"></div>
-    <div id="predictions" style="display: none;flex-direction: row">
-      <div id="ok_atlas" class="prediction">OK ATLAS</div>
-      <div id="other" class="negative">Other</div>
-    </div>
-    <!-- <audio id="yes">
-      <source src="yes.mp3" type="audio/mpeg">
-    </audio> -->
     <p>
       Note: The numbers in the above icons represent the value of the model's prediction (i.e. it's confidence) at that particular instance (max 1.0).
       <br>
@@ -31,5 +24,31 @@
       <br>
       <button id="model_version" class="info"></button>
     </p>
+
+    <div id="console"></div>
+    <div id="predictions" style="display: none;flex-direction: row">
+      <div id="ok_atlas" class="prediction">OK ATLAS</div>
+      <div id="other" class="negative">Other</div>
+    </div>
+
+    <div id="chartContainer" style="height: 300px; width: 50%;"></div>
+    <script>
+      var chart = new CanvasJS.Chart('chartContainer', {
+        title: {
+          text: "Confidence"
+        },
+        axisY: {
+          includeZero: false,
+          maximum: 1.25,
+          minimum: 0,
+          markerSize:0
+        },      
+        data: [{
+          type: "spline",
+          dataPoints: chartData
+        }]
+      });
+    </script>
+    
   </body>
 </html>

@@ -2,6 +2,8 @@ let specGenerator;
 let model; 
 let threshold = 0.99;
 let count = 0;
+var xVal = 0;
+var chartData = [];
 
 async function app() {
   specGenerator = speechCommands.create();
@@ -17,6 +19,7 @@ app().then((result)=>{
 });
 
 async function highlight(confidence) {
+  updateChart(confidence);
   pred_divs = document.getElementsByClassName('prediction');
   for(let i=0;i<pred_divs.length;i++){
     pred_divs[i].classList.remove('green_background');
@@ -99,4 +102,19 @@ function normalize(x) {
  const mean = -100;
  const std = 10;
  return x.map(x => (x - mean) / std);
+}
+
+var updateChart = function(value) {
+  chartData.push({
+    x: xVal,
+    y: value
+  })
+  xVal ++;
+
+  if (chartData.length > 20) {
+    chartData.shift();
+  }
+
+  chart.render();
+
 }
