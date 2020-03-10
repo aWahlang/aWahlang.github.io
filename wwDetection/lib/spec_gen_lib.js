@@ -71,6 +71,7 @@
             this.analyser = this.audioContext.createAnalyser();
             this.analyser.fftSize = this.fftSize;
             this.analyser.smoothingTimeConstant = 0;
+            console.log(this.analyser);
             // console.log("Analyser fftsize", this.analyser.fftSize)
 
             // Create the scriptProcessorNode
@@ -225,11 +226,11 @@
     }
 
     function getTime() {
-        var d = new Date();
-        var h = addZero(d.getHours(), 2);
-        var m = addZero(d.getMinutes(), 2);
-        var s = addZero(d.getSeconds(), 2);
-        var ms = addZero(d.getMilliseconds(), 3);
+        let d = new Date();
+        let h = addZero(d.getHours(), 2);
+        let m = addZero(d.getMinutes(), 2);
+        let s = addZero(d.getSeconds(), 2);
+        let ms = addZero(d.getMilliseconds(), 3);
         return h + ":" + m + ":" + s + ":" + ms;
     }
 

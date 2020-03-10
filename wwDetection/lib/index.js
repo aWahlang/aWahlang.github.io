@@ -6,6 +6,7 @@ var chartData = [];
 var xVal = 0;
 var fpMode = false;
 var modelName;
+var date = new Date();
 const NUM_FRAMES = numFramesPerSpectrogramValue;
 const INPUT_SHAPE = [NUM_FRAMES, 232, 1];
 let  TIMESTEPS = 0;
@@ -29,6 +30,8 @@ async function loadModel(modelName, timeSteps) {
   model = await tf.loadLayersModel(inputUrl+'/models/'+ modelName +'/model.json');
   console.log(modelName);
   updateChart(0);
+  listen();
+  setTimeout(listen, 5000);
 }
 
 function highlight(confidence) {
@@ -90,8 +93,9 @@ async function listen(){
 
   // save false positives
    if (confidence[0] >= threshold && fpMode){
-    console.log("False positive", confidence[0]);
-    download(vals, "test_sample(SC).json", 'text/plain');
+    let timestamp = getTime();
+    console.log("False_positive", confidence[0]);
+    download(vals, "falsePositive_"+timestamp+".json", 'text/plain');
   }
     tf.dispose([input, probs]);
 
@@ -158,3 +162,17 @@ window.onclick = function(event) {
     }
   }
 } 
+
+function addZero(x, n) {
+  while (x.toString().length < n) {
+      x = "0" + x;
+  }
+  return x;
+}
+
+function getTime() {
+  let h = addZero(date.getHours(), 2);
+  let m = addZero(date.getMinutes(), 2);
+  let s = addZero(date.getSeconds(), 2);
+  return h + ":" + m + ":" + s;
+}
