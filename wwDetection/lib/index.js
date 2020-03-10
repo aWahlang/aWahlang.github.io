@@ -1,31 +1,46 @@
-let recognizer,baseRecognizer;
-let model;
+var specGenerator;
+var model; 
 let threshold = 0.99;
+let count = 0;
+var chartData = [];
+var xVal = 0;
+var fpMode = false;
+var modelName;
+const NUM_FRAMES = numFramesPerSpectrogramValue;
+const INPUT_SHAPE = [NUM_FRAMES, 232, 1];
+let  TIMESTEPS = 0;
+window.onload = init;
 
-async function app() {
- baseRecognizer = speechCommands.create('BROWSER_FFT');
- await baseRecognizer.ensureModelLoaded();
- let modelName = 'atlas_model_v5_5';
- model = await tf.loadLayersModel('https://awahlang.github.io/wwDetection/models/'+modelName+'/model.json');
- console.log("model used:", modelName);
- document.getElementById('model_version').innerHTML = "Model used: " + modelName;
+function init(){
+  async function app() {
+    specGenerator = speechCommands.create();
+    document.getElementById('fp_mode').innerHTML = "False Positive mode:<br />" + fpMode;
+  }
+  
+  app().then((result)=>{
+    document.getElementById('listen').disabled = false;
+    document.getElementById('predictions').style.display = 'flex';
+  });
 }
 
-app().then((result)=>{
-  document.getElementById('listen').disabled = false;
-  document.getElementById('predictions').style.display = 'flex';
-});
+async function loadModel(modelName, timeSteps) {
+  document.getElementById('modelDropdown').innerHTML = modelName;
+  TIMESTEPS = timeSteps;
+  model = await tf.loadLayersModel(inputUrl+'/models/'+ modelName +'/model.json');
+  console.log(modelName);
+  updateChart(0);
+}
 
-async function highlight(confidence) {
+function highlight(confidence) {
+  updateChart(confidence);
   pred_divs = document.getElementsByClassName('prediction');
   for(let i=0;i<pred_divs.length;i++){
     pred_divs[i].classList.remove('green_background');
   }
-  if((confidence >= threshold)){
+  if((confidence >confidenceThreshold)){
     document.getElementById('ok_atlas').innerHTML = 'ok_Atlas<br>' + confidence.toFixed(5);
     document.getElementById('ok_atlas').classList.add('green_background');
-    console.log("**OKAY ATLAS DETECTED**");
-   // document.getElementById('yes').play();
+    console.log("OK ATLAS DETECTED!")
   }
   else {
     let val = 1.000 - confidence.toFixed(5);
@@ -37,16 +52,8 @@ async function highlight(confidence) {
 function setThreshold(){
   let value = document.getElementById("threshold").value;
   console.log("update threshold: ",value);
-  threshold = value;
+  confidenceThreshold = value;
 }
-
-const NUM_FRAMES = 43;
-const INPUT_SHAPE = [NUM_FRAMES, 232, 1];
-const words = {
-  0:'_background_noise',
-  1:'negative',
-  2:'ok_atlas',
-};
 
 function download(content, fileName, contentType) {
     content =  JSON.stringify(content)
@@ -57,37 +64,54 @@ function download(content, fileName, contentType) {
     a.click();
 }
 
-// const words = ['hey_atlas','negative_word','noise'];
-let prob;
+
 async function listen(){
-  if (baseRecognizer.isListening()) {
-   baseRecognizer.stopListening();
-   document.getElementById('listen').textContent = 'Listen for "OK ATLAS"';
-   return;
+  if (specGenerator.isListening()) {
+    specGenerator.stopListening();
+    document.getElementById('listen').textContent = 'Listen for "OK ATLAS"';
+    return;
   }
   document.getElementById('listen').textContent = 'Stop';
-  baseRecognizer.listen(async ({spectrogram: {frameSize, data}}) => {
-  const vals = normalize(data.subarray(-frameSize * NUM_FRAMES)); // (232 * 43)
-   
-   const input = tf.tensor(vals, [1, ...INPUT_SHAPE]);
-   const probs = model.predict(input);
-   // const predLabel = probs.argMax(1);
-   // const label = (await predLabel.data())[0];
-   // const confidence = probs.max(1);
-   // const conf = (await confidence.data())[0];
-   // console.log(label+","+words[label]+","+conf);
-   const confidence = await probs.data()
-   console.log("confidence:", confidence[0].toFixed(4))
-   await highlight(confidence[0]);
-   tf.dispose([input, probs]);
-  }, {
-   overlapFactor: 0.75,
-   includeSpectrogram: true,
-   invokeCallbackOnNoiseAndUnknown: false
-  });
-}
+  specGenerator.listen(async(vals) => {
+    tf.engine().startScope();
+    const input = tf.tensor(vals, [1, ...INPUT_SHAPE]);
+    let probs;
+    if (TIMESTEPS != 0) {
+      const split = tf.split(input, TIMESTEPS, 1);
+      const stack = tf.stack(split, 1);
+      probs = model.predict(stack);
+    }
+    else {
+      probs = model.predict(input);
+    }
+    const confidence = await probs.data();
+    console.log("confidence:", confidence[0].toFixed(4));
+    await highlight(confidence[0]);
 
-app();
+  // save false positives
+   if (confidence[0] >= threshold && fpMode){
+    console.log("False positive", confidence[0]);
+    download(vals, "test_sample(SC).json", 'text/plain');
+  }
+    tf.dispose([input, probs]);
+
+   tf.engine().endScope();
+  }, {
+    fftSize : fftSizeValue,
+    sampleRateHz : sampleRateHzValue,
+    overlapFactor: overlapFactorThreshold,
+    numFramesPerSpectrogram: numFramesPerSpectrogramValue, 
+    columnTruncateLength:columnTruncateLengthValue,
+    frameInterval:frameIntervalValue
+  });
+} 
+
+async function toggleFPMode(){
+  fpMode = !fpMode;
+  let element = document.getElementById('fp_mode');
+  element.innerHTML = "False Positive mode:<br/>" + fpMode;
+  element.classList.toggle('button_critical_active');
+}
 
 function flatten(tensors) {
  const size = tensors[0].length;
@@ -101,3 +125,36 @@ function normalize(x) {
  const std = 10;
  return x.map(x => (x - mean) / std);
 }
+
+var updateChart = function(value) {
+  chartData.push({
+    x: xVal,
+    y: value
+  })
+  xVal ++;
+
+  if (chartData.length > 20) {
+    chartData.shift();
+  }
+
+  chart.render();
+}
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function showDropdown() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// Close the dropdown menu if the user clicks outside of it
+window.onclick = function(event) {
+  if (!event.target.matches('.dropbtn')) {
+    var dropdowns = document.getElementsByClassName("dropdown-content");
+    var i;
+    for (i = 0; i < dropdowns.length; i++) {
+      var openDropdown = dropdowns[i];
+      if (openDropdown.classList.contains('show')) {
+        openDropdown.classList.remove('show');
+      }
+    }
+  }
+} 

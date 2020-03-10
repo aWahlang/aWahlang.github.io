@@ -1,37 +1,44 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8"/>
-    <script src="https://awahlang.github.io/wwDetection/lib/tf.min.js"></script>
-    <script src="https://awahlang.github.io/wwDetection/lib/properties.js"></script>
-    <script src="https://awahlang.github.io/wwDetection/lib/spec_gen_lib.js"></script>
-    <!-- <script src="./lib/speechcommands.js"></script> -->
-    <script src="https://awahlang.github.io/wwDetection/lib/index2.js"></script>
-    <script src="https://awahlang.github.io/wwDetection/lib/canvasjs.min.js"></script>
+    <meta charset="utf-8"/> 
     <link rel="stylesheet" href="./lib/styles.css">
+    <script src="./lib/adapter.js"></script>
+    <!-- <script src="./lib/tf.min.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs/dist/tf.min.js"></script>
+    <script src="./lib/properties.js"></script>
+    <script src="./lib/spec_gen_lib.js"></script>
+    <script src="./lib/canvasjs.min.js"></script>
+    <script src="./lib/index.js"></script>
     <title>Offline Recognition</title>
   </head> 
   <body>
-    <button id="listen" onclick="listen()" class="button" disabled="true">Listen for "OK ATLAS"</button>
     <p>
-      Note: The numbers in the above icons represent the value of the model's prediction (i.e. it's confidence) at that particular instance (max 1.0).
-      <br>
-      <br>
       Set "Okay, Atlas" activation threshold (0 - 1.0) : 
       <br>
       <input type="text" name="threshold" id="threshold" value="0.99">
       <button type="button" id="set" class="button" onclick="setThreshold()">Set threshold</button>
       <br>
-      <button id="model_version" class="info"></button>
-    </p>
 
+      <div class="dropdown">
+        <button onclick="showDropdown()" class="dropbtn" id='modelDropdown'>Select model version</button>
+        <div id="myDropdown" class="dropdown-content">
+          <a onclick="loadModel('atlas_model_v7_2', 0)">Old Model v7_2</a>
+          <a onclick="loadModel('atlas_ww_rrModel_t8_v1', 8)">New Model t8</a>
+          <a onclick="loadModel('atlas_ww_rrModel_t4_v1', 4)">New Model t4</a>
+        </div>
+      </div> 
+
+      <button id="fp_mode" class="button_critical" onclick="toggleFPMode()"></button>
+    </p>
+    <button id="listen" onclick="listen()" class="button" disabled="true">Listen for "OK ATLAS"</button>
     <div id="console"></div>
     <div id="predictions" style="display: none;flex-direction: row">
       <div id="ok_atlas" class="prediction">OK ATLAS</div>
       <div id="other" class="negative">Other</div>
     </div>
 
-    <div id="chartContainer" style="height: 300px; width: 50%;"></div>
+    <div id="chartContainer" style="height: 300px; width: 75%;"></div>
     <script>
       var chart = new CanvasJS.Chart('chartContainer', {
         title: {
@@ -44,11 +51,11 @@
           markerSize:0
         },      
         data: [{
-          type: "spline",
+          type: "line",
           dataPoints: chartData
         }]
       });
     </script>
-    
+
   </body>
 </html>
