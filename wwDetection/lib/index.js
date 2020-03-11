@@ -94,8 +94,10 @@ async function listen(){
   // save false positives
    if (confidence[0] >= threshold && fpMode){
     let timestamp = getTime();
+    let filename = "falsePositive_".concat(timestamp).concat('.json');
+    console.log(filename);
     console.log("False_positive", confidence[0]);
-    download(vals, "falsePositive_"+timestamp+".json", 'text/plain');
+    download(vals, filename, 'text/plain');
   }
     tf.dispose([input, probs]);
 
@@ -174,5 +176,6 @@ function getTime() {
   let h = addZero(date.getHours(), 2);
   let m = addZero(date.getMinutes(), 2);
   let s = addZero(date.getSeconds(), 2);
-  return h + ":" + m + ":" + s;
+  let ms = addZero(date.getMilliseconds(), 2);
+  return h + "_" + m + "_" + s + "_" + ms;
 }
