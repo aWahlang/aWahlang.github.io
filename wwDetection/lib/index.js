@@ -1,12 +1,10 @@
 var specGenerator;
 var model; 
-let threshold = 0.99;
 let count = 0;
 var chartData = [];
 var xVal = 0;
 var fpMode = false;
 var modelName;
-var date = new Date();
 const NUM_FRAMES = numFramesPerSpectrogramValue;
 const INPUT_SHAPE = [NUM_FRAMES, 232, 1];
 let  TIMESTEPS = 0;
@@ -80,8 +78,8 @@ async function listen(){
     const input = tf.tensor(vals, [1, ...INPUT_SHAPE]);
     let probs;
     if (TIMESTEPS != 0) {
-      const split = tf.split(input, TIMESTEPS, 1);
-      const stack = tf.stack(split, 1);
+      let split = tf.split(input, TIMESTEPS, 1);
+      let stack = tf.stack(split, 1);
       probs = model.predict(stack);
     }
     else {
@@ -92,13 +90,14 @@ async function listen(){
     await highlight(confidence[0]);
 
   // save false positives
-   if (confidence[0] >= threshold && fpMode){
-    let timestamp = getTime();
-    let filename = "falsePositive_".concat(timestamp).concat('.json');
-    console.log(filename);
+   if (confidence[0] >= confidenceThreshold && fpMode){
     console.log("False_positive", confidence[0]);
-    download(vals, filename, 'text/plain');
+    saveVals(vals, 'falsePositive_');
   }
+  // todo cant dispose stack and split
+  // if (TIMESTEPS != 0){
+  //   tf.dispose([split, stack]);
+  // }
     tf.dispose([input, probs]);
 
    tf.engine().endScope();
@@ -111,6 +110,13 @@ async function listen(){
     frameInterval:frameIntervalValue
   });
 } 
+
+function saveVals(vals, name){
+  let timestamp = getTime();
+  let filename = name.concat(timestamp).concat('.json');
+  console.log(filename);
+  download(vals, filename, 'text/plain');
+}
 
 async function toggleFPMode(){
   fpMode = !fpMode;
@@ -173,6 +179,7 @@ function addZero(x, n) {
 }
 
 function getTime() {
+  let date = new Date();
   let h = addZero(date.getHours(), 2);
   let m = addZero(date.getMinutes(), 2);
   let s = addZero(date.getSeconds(), 2);
